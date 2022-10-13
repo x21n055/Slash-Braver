@@ -23,12 +23,14 @@ public class PlayerState
     public virtual void Enter()
     {
         DoChecks();
+        player.Anime.SetBool(animeBoolName, true);
         startTime = Time.time;
+        Debug.Log(animeBoolName);
     }
 
     public virtual void Exit()
     {
-
+        player.Anime.SetBool(animeBoolName, false);
     }
 
     public virtual void LogicUpdate()
