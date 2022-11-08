@@ -100,6 +100,8 @@ public class Player : MonoBehaviour
     //ƒWƒƒƒ“ƒv
     void Jump()
     {
+
+        Debug.Log(isGround);
         if (!cantMove)
         {
             if (isGround == true && Input.GetKeyDown(KeyCode.Space))

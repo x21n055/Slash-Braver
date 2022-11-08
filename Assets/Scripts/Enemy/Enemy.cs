@@ -53,7 +53,6 @@ public class Enemy : MonoBehaviour
 
     void Update()
     {
-        Debug.Log(currentHealth);
         Stop();
         if (attacking) { 
         Collider2D[] hitPlayer = Physics2D.OverlapCircleAll(attackPoint.position, attackRange, playerLayers);
