@@ -6,7 +6,7 @@ using UnityEngine.SceneManagement;
 public class Player : MonoBehaviour
 {
     public int attackDamage;
-    public int fireAttakDamage;
+    public int fireAttackDamage;
 
     public float speed;
     public float jumpForce;
@@ -24,6 +24,7 @@ public class Player : MonoBehaviour
     private bool isGround;
     private bool isJumping;
     private bool entryAttack = true;
+    private bool secondAttack = false;
     private bool cantMove = false;
     private bool fired;
     private float jumpTimeCounter;
@@ -100,8 +101,6 @@ public class Player : MonoBehaviour
     //ƒWƒƒƒ“ƒv
     void Jump()
     {
-
-        Debug.Log(isGround);
         if (!cantMove)
         {
             if (isGround == true && Input.GetKeyDown(KeyCode.Space))
@@ -143,12 +142,21 @@ public class Player : MonoBehaviour
                 stopTimeCounter = 0.5f;
                 
             }
-            else if (!entryAttack && durationCounter > 0f && leftWaitTime <=0)
+            else if (!entryAttack && durationCounter > 0f && leftWaitTime <=0 && !secondAttack)
             {
                 Attack2();
-                entryAttack = true;
+                durationCounter = duration;
+                secondAttack = true;
                 leftWaitTime = attackRate;
                 stopTimeCounter = 0.5f;
+            }
+            else if (!entryAttack && durationCounter > 0f && leftWaitTime <=0 && secondAttack)
+            {
+                Attack3();
+                entryAttack = true;
+                secondAttack = false;
+                leftWaitTime = 0.6f;
+                stopTimeCounter = 0.6f;
             }
     }
 
@@ -173,7 +181,7 @@ public class Player : MonoBehaviour
 
             foreach (Collider2D enemy in hitEnemies)
             {
-                enemy.GetComponent<Enemy>().TakeDamage(fireAttakDamage);
+                enemy.GetComponent<Enemy>().TakeDamage(fireAttackDamage);
             }
         }
         
@@ -199,7 +207,32 @@ public class Player : MonoBehaviour
 
             foreach (Collider2D enemy in hitEnemies)
             {
-                enemy.GetComponent<Enemy>().TakeDamage(fireAttakDamage);
+                enemy.GetComponent<Enemy>().TakeDamage(fireAttackDamage);
+            }
+        }
+    }
+
+    void Attack3()
+    {
+        rb2d.velocity = new Vector2(0, 0);
+        if (!fired)
+        {
+            anime.SetTrigger("Attack3");
+            Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(attackPoint.position, attackRange, enemyLayers);
+
+            foreach (Collider2D enemy  in hitEnemies)
+            {
+                enemy.GetComponent<Enemy>().TakeDamage(attackDamage);
+            }
+        }
+        if (fired)
+        {
+            anime.SetTrigger("FireAttack3");
+            Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(attackPoint.position, attackRange, enemyLayers);
+
+            foreach (Collider2D enemy in hitEnemies)
+            {
+                enemy.GetComponent<Enemy>().TakeDamage(fireAttackDamage);
             }
         }
     }
