@@ -20,6 +20,8 @@ public class ButtonController : MonoBehaviour, IPointerDownHandler, IPointerUpHa
 
     private bool isPushed = false;
 
+    public string UIname;
+
 
     void Awake()
     {
@@ -28,7 +30,7 @@ public class ButtonController : MonoBehaviour, IPointerDownHandler, IPointerUpHa
         child = transform.GetChild(0);
         defaultY = child.localPosition.y;
 
-        Transform canvas = GameObject.Find("Canvas").transform;
+        Transform canvas = GameObject.Find(UIname).transform;
         buttonControllers = canvas.GetComponentsInChildren<ButtonController>();
     }
 

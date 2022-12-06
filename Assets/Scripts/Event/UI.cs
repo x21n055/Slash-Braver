@@ -14,15 +14,17 @@ public class UI : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    public void Update()
     {
-        if (Input.GetKeyDown(KeyCode.H))
+        if (Input.GetKeyDown(KeyCode.Escape))
         {
-            menu.SetActive(true);
-        }
-        else if (Input.GetKeyDown(KeyCode.L))
-        {
-            menu.SetActive(false);
+            if (menu.gameObject.activeSelf == true)
+            {
+                menu.SetActive(false);
+            }else
+            {
+                menu.SetActive(true);
+            }
         }
     }
 }
