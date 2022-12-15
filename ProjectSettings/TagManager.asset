@@ -42,6 +42,21 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Sky
+    uniqueID: 3814993069
+    locked: 0
+  - name: Clouds
+    uniqueID: 3836306809
+    locked: 0
+  - name: Sea
+    uniqueID: 3390098103
+    locked: 0
+  - name: FarGround
+    uniqueID: 3497759175
+    locked: 0
+  - name: Moon
+    uniqueID: 2619296745
+    locked: 0
   - name: BackGround
     uniqueID: 251418319
     locked: 0
@@ -53,4 +68,7 @@ TagManager:
     locked: 0
   - name: Mob
     uniqueID: 849918291
+    locked: 0
+  - name: Particle
+    uniqueID: 290333981
     locked: 0
