@@ -1,11 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class Enemy : MonoBehaviour
 {
     public Animator anime = null;
     public int maxHealth = 100;
+    public UnityEvent shock;
 
     public Transform rayCast;
     public Transform attackPoint;
@@ -231,7 +233,7 @@ public class Enemy : MonoBehaviour
         if (!isDead)
         {
 
-
+            shock.Invoke();
             currentHealth -= damage;
             stopTimeCounter = 0.4f;
             anime.SetTrigger("enemy_damaged");

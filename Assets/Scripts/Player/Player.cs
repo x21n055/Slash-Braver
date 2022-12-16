@@ -2,11 +2,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class Player : MonoBehaviour
 {
     public int attackDamage;
     public int fireAttackDamage;
+    public int maxHealth;
+    public int currentHealth;
+    public Image HPBar;
 
     public float speed;
     public float jumpForce;
@@ -39,6 +43,7 @@ public class Player : MonoBehaviour
     {
         anime = GetComponent<Animator>();
         rb2d = GetComponent<Rigidbody2D>();
+        currentHealth = maxHealth;
     }
 
     // Update is called once per frame
@@ -283,6 +288,9 @@ public class Player : MonoBehaviour
 
     public void TakeDamage()
     {
+        currentHealth -= 20;
+        HPBar.fillAmount = (float)currentHealth / (float)maxHealth;
+        Debug.Log("‚­‚ç‚Á‚½");
         anime.SetTrigger("Damaged");
         stopTimeCounter = 0.7f;
         rb2d.velocity = new Vector2(0, 0);
