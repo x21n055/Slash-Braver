@@ -57,6 +57,9 @@ TagManager:
   - name: Moon
     uniqueID: 2619296745
     locked: 0
+  - name: Light
+    uniqueID: 2934282497
+    locked: 0
   - name: BackGround
     uniqueID: 251418319
     locked: 0

@@ -9,19 +9,21 @@ public class Enemy : MonoBehaviour
     public int maxHealth = 100;
     public UnityEvent shock;
 
+    public float moveSpeed;
+
+    //コンバットAI
     public Transform rayCast;
     public Transform attackPoint;
     public LayerMask raycastMask;
     public LayerMask playerLayers;
     public float rayCastLength;
     public float attackDistance; //Minimum distance for attack
-    public float moveSpeed;
     public float timer; //Timer for cooldown between attacks
     public Transform leftLimit;
     public Transform rightLimit;
     public float attackRange = 0.5f;
     public bool attacking;
-    public bool cantMove;
+    public bool cantMove = false;
     public float stopTimeCounter;
 
     private SpriteRenderer sr = null;
@@ -55,7 +57,7 @@ public class Enemy : MonoBehaviour
 
     void Update()
     {
-        Stop();
+        RaycastDebugger();
         if (attacking) { 
         Collider2D[] hitPlayer = Physics2D.OverlapCircleAll(attackPoint.position, attackRange, playerLayers);
         foreach (Collider2D player in hitPlayer)
@@ -157,6 +159,7 @@ public class Enemy : MonoBehaviour
         attackMode = true; //To check if Enemy can still attack or not
         anime.SetBool("enemy_run", false);
         anime.SetBool("enemy_attack", true);
+        Flip();
     }
 
     void Cooldown()
@@ -209,7 +212,7 @@ public class Enemy : MonoBehaviour
 
     void Flip()
     {
-        if (!isDead)
+        if (!isDead && !cantMove)
         {
             Vector3 rotation = transform.eulerAngles;
             if (transform.position.x > target.position.x)
@@ -253,23 +256,22 @@ public class Enemy : MonoBehaviour
 
     }
 
-    void Stop()
-    {
-        stopTimeCounter -= Time.deltaTime;
-        if (stopTimeCounter > 0)
-        {
-            cantMove = true;
-        }
-        else
-        {
-            cantMove = false;
-        }
-    }
-
     void Die()
     {
         anime.SetBool("enemy_dead", true);
     }
 
-    
+
+    void RaycastDebugger()
+    {
+        if (distance > attackDistance)
+        {
+            Debug.DrawRay(rayCast.position, transform.right * rayCastLength, Color.red);
+        }
+        else if (attackDistance > distance)
+        {
+            Debug.DrawRay(rayCast.position, transform.right * rayCastLength, Color.green);
+        }
+    }
+
 }

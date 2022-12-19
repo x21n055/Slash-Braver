@@ -10,6 +10,12 @@ public class Player : MonoBehaviour
     public int fireAttackDamage;
     public int maxHealth;
     public int currentHealth;
+
+    public bool attack = false;    //プレイヤーが攻撃中に攻撃ボタンを押したかどうか
+    public bool attacking;  //アニメーションで管理。プレイヤーが攻撃中かどうか
+    public bool nextAttack = true; //プレイヤーが次のコンボ攻撃に移行可能かどうか
+    public bool cantMove = false; //プレイヤーが移動不可能かどうか 一部アニメーション管理
+
     public Image HPBar;
 
     public float speed;
@@ -17,6 +23,7 @@ public class Player : MonoBehaviour
     public float jumpTimer;
     public float checkRadius;
     public float attackRange = 0.5f;
+    public float horizontalkey;
 
     public Transform feetPos;
     public Transform attackPoint;
@@ -27,15 +34,9 @@ public class Player : MonoBehaviour
     private Rigidbody2D rb2d = null;
     private bool isGround;
     private bool isJumping;
-    private bool entryAttack = true;
-    private bool secondAttack = false;
-    private bool cantMove = false;
+    
     private bool fired;
     private float jumpTimeCounter;
-    private float duration = 0.5f;
-    private float durationCounter;
-    private float attackRate = 0.2f;
-    private float leftWaitTime;
     private float stopTimeCounter;
 
     // Start is called before the first frame update
@@ -58,9 +59,8 @@ public class Player : MonoBehaviour
         {
             PlayerAttack();
         }
+        ComboCheck();
         Jump();
-        Stop();
-        TimeOrdhin();
         
 
         //設置判定
@@ -75,6 +75,7 @@ public class Player : MonoBehaviour
         Move(); 
         anime.SetBool("Jump", isJumping);
         anime.SetBool("Ground", isGround);
+        rb2d.velocity = new Vector2(horizontalkey * speed, rb2d.velocity.y);
     }
 
     //横移動
@@ -82,7 +83,7 @@ public class Player : MonoBehaviour
     {
         if (!cantMove)
         {
-            float horizontalkey = Input.GetAxis("Horizontal");
+            horizontalkey = Input.GetAxis("Horizontal");
             //横移動
             if (horizontalkey > 0)
             {
@@ -99,7 +100,7 @@ public class Player : MonoBehaviour
                 anime.SetBool("Run", false);
             }
 
-            rb2d.velocity = new Vector2(horizontalkey * speed, rb2d.velocity.y);
+            
         }
     }
 
@@ -136,142 +137,44 @@ public class Player : MonoBehaviour
     }
 
 
-    void PlayerAttack()
+    public void PlayerAttack()
     {
-            if (entryAttack && leftWaitTime <= 0)
-            {
-                Attack();
-                durationCounter = duration;
-                entryAttack = false;
-                leftWaitTime = attackRate;
-                stopTimeCounter = 0.5f;
-                
-            }
-            else if (!entryAttack && durationCounter > 0f && leftWaitTime <=0 && !secondAttack)
-            {
-                Attack2();
-                durationCounter = duration;
-                secondAttack = true;
-                leftWaitTime = attackRate;
-                stopTimeCounter = 0.5f;
-            }
-            else if (!entryAttack && durationCounter > 0f && leftWaitTime <=0 && secondAttack)
-            {
-                Attack3();
-                entryAttack = true;
-                secondAttack = false;
-                leftWaitTime = 0.6f;
-                stopTimeCounter = 0.6f;
-            }
-    }
-
-    //攻撃
-    void Attack()
-    {
-        rb2d.velocity = new Vector2(0, 0);
-        if (!fired)
+        if (attacking)
         {
-            anime.SetTrigger("Attack");
-            Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(attackPoint.position, attackRange, enemyLayers);
-
-            foreach (Collider2D enemy in hitEnemies)
-            {
-                enemy.GetComponent<Enemy>().TakeDamage(attackDamage);
-            }
-        }
-        else if (fired)
-        {
-            anime.SetTrigger("FireAttack");
-            Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(attackPoint.position, attackRange, enemyLayers);
-
-            foreach (Collider2D enemy in hitEnemies)
-            {
-                enemy.GetComponent<Enemy>().TakeDamage(fireAttackDamage);
-            }
-        }
-        
-        
-    }
-    //攻撃２
-    void Attack2()
-    {
-        rb2d.velocity = new Vector2(0, 0);
-        if (!fired)
-        {
-            anime.SetTrigger("Attack2");
-            Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(attackPoint.position, attackRange, enemyLayers);
-            foreach (Collider2D enemy in hitEnemies)
-            {
-                enemy.GetComponent<Enemy>().TakeDamage(attackDamage);
-            }
-        }
-        else if (fired)
-        {
-            anime.SetTrigger("FireAttack2");
-            Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(attackPoint.position, attackRange, enemyLayers);
-
-            foreach (Collider2D enemy in hitEnemies)
-            {
-                enemy.GetComponent<Enemy>().TakeDamage(fireAttackDamage);
-            }
-        }
-    }
-
-    void Attack3()
-    {
-        rb2d.velocity = new Vector2(0, 0);
-        if (!fired)
-        {
-            anime.SetTrigger("Attack3");
-            Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(attackPoint.position, attackRange, enemyLayers);
-
-            foreach (Collider2D enemy  in hitEnemies)
-            {
-                enemy.GetComponent<Enemy>().TakeDamage(attackDamage);
-            }
-        }
-        if (fired)
-        {
-            anime.SetTrigger("FireAttack3");
-            Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(attackPoint.position, attackRange, enemyLayers);
-
-            foreach (Collider2D enemy in hitEnemies)
-            {
-                enemy.GetComponent<Enemy>().TakeDamage(fireAttackDamage);
-            }
-        }
-    }
-
-    void Stop()
-    {
-        stopTimeCounter -= Time.deltaTime;
-        if (stopTimeCounter > 0)
-        {
-            cantMove = true;
+            attack = true;
         }
         else
         {
-            cantMove = false;
+            anime.SetTrigger("Attack");
+        }
+
+    }
+
+    public void ComboCheck()
+    {
+        if (attack && nextAttack)
+        {
+            anime.SetBool("ComboAttack",true);
+            attack = false;
+        }
+        else
+        {
+            anime.SetBool("ComboAttack", false);
+        }
+    }
+
+    //当たり判定チェック　アニメーションから呼び出し
+    void AttackCheck()
+    {
+        Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(attackPoint.position, attackRange, enemyLayers);
+
+        foreach (Collider2D enemy in hitEnemies)
+        {
+            enemy.GetComponent<Enemy>().TakeDamage(attackDamage);
         }
     }
     
-    void TimeOrdhin()
-    {
-            if (leftWaitTime > 0)
-            {
-                leftWaitTime -= Time.deltaTime;
-            }
-
-            if (durationCounter > 0f)
-            {
-                durationCounter -= Time.deltaTime;
-            }
-            else
-            {
-                durationCounter = 0;
-                entryAttack = true;
-            }
-    }
+    
     private void OnDrawGizmosSelected()
     {
         if (attackPoint == null)
