@@ -69,11 +69,11 @@ TagManager:
   - name: Ground
     uniqueID: 2691049979
     locked: 0
-  - name: Player
-    uniqueID: 3161316961
-    locked: 0
   - name: Mob
     uniqueID: 849918291
+    locked: 0
+  - name: Player
+    uniqueID: 3161316961
     locked: 0
   - name: Particle
     uniqueID: 290333981

@@ -20,6 +20,7 @@ public class Player : MonoBehaviour
 
     public float speed;
     public float jumpForce;
+    public float jumpImpulse;   //二段ジャンプ時の飛び具合
     public float jumpTimer;
     public float checkRadius;
     public float attackRange = 0.5f;
@@ -113,7 +114,7 @@ public class Player : MonoBehaviour
             {
                 isJumping = true;
                 jumpTimeCounter = jumpTimer;
-                rb2d.velocity = Vector2.up * jumpForce;
+                rb2d.AddForce(Vector2.up * jumpImpulse, ForceMode2D.Impulse);
             }
 
             if (Input.GetKey(KeyCode.Space) && isJumping == true)
@@ -127,6 +128,13 @@ public class Player : MonoBehaviour
                 {
                     isJumping = false;
                 }
+            }
+
+            if (!isJumping && !isGround && Input.GetKeyDown(KeyCode.Space))
+            {
+                
+                rb2d.AddForce(Vector2.up * jumpImpulse, ForceMode2D.Impulse);
+                Debug.Log("二段");
             }
 
             if (Input.GetKeyUp(KeyCode.Space))
@@ -194,7 +202,6 @@ public class Player : MonoBehaviour
         currentHealth -= 20;
         HPBar.fillAmount = (float)currentHealth / (float)maxHealth;
         Debug.Log("くらった");
-        anime.SetTrigger("Damaged");
         stopTimeCounter = 0.7f;
         rb2d.velocity = new Vector2(0, 0);
     }
