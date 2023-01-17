@@ -978,7 +978,7 @@ Transform:
   m_Children:
   - {fileID: 94016608}
   m_Father: {fileID: 0}
-  m_RootOrder: 19
+  m_RootOrder: 22
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &99672861
 MonoBehaviour:
@@ -1178,7 +1178,7 @@ RectTransform:
   - {fileID: 407154613}
   - {fileID: 1982645165}
   m_Father: {fileID: 0}
-  m_RootOrder: 24
+  m_RootOrder: 27
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -3424,7 +3424,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  moveSpeed: 12
+  moveSpeed: 7
   rayCast: {fileID: 208168583}
   attackPoint: {fileID: 1677002849}
   raycastMask:
@@ -3433,7 +3433,7 @@ MonoBehaviour:
   playerLayers:
     serializedVersion: 2
     m_Bits: 256
-  rayCastLength: 4.5
+  rayCastLength: 10
   attackDistance: 8
   timer: 1
   leftLimit: {fileID: 472270504}
@@ -3680,7 +3680,7 @@ GameObject:
   - component: {fileID: 486908604}
   - component: {fileID: 486908603}
   m_Layer: 6
-  m_Name: HeavyArmor2
+  m_Name: Cocoon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3808,7 +3808,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 31
+  m_RootOrder: 20
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &492146622
 GameObject:
@@ -4098,7 +4098,7 @@ RectTransform:
   - {fileID: 1895853005}
   - {fileID: 745148393}
   m_Father: {fileID: 0}
-  m_RootOrder: 22
+  m_RootOrder: 25
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -4440,7 +4440,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 27
+  m_RootOrder: 30
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &596713415
 GameObject:
@@ -11269,7 +11269,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 29
+  m_RootOrder: 32
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &745148392
 GameObject:
@@ -11665,7 +11665,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 25
+  m_RootOrder: 28
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &900438946
 GameObject:
@@ -24174,7 +24174,7 @@ RectTransform:
   - {fileID: 1234011371}
   - {fileID: 53172589}
   m_Father: {fileID: 0}
-  m_RootOrder: 20
+  m_RootOrder: 23
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -24491,7 +24491,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 32
+  m_RootOrder: 21
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!70 &1236953825
 CapsuleCollider2D:
@@ -24506,8 +24506,8 @@ CapsuleCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 4.6, y: -1.94}
-  m_Size: {x: 4.64, y: 7.6}
+  m_Offset: {x: 2.92, y: -1.48}
+  m_Size: {x: 2.79, y: 4.66}
   m_Direction: 0
 --- !u!50 &1236953826
 Rigidbody2D:
@@ -24559,7 +24559,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 26
+  m_RootOrder: 29
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1269249651
 GameObject:
@@ -30944,7 +30944,7 @@ MonoBehaviour:
   playerLayers:
     serializedVersion: 2
     m_Bits: 256
-  rayCastLength: 4.5
+  rayCastLength: 10
   attackDistance: 5
   timer: 2
   leftLimit: {fileID: 1952259578}
@@ -32505,7 +32505,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 28
+  m_RootOrder: 31
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1467597853
 GameObject:
@@ -38482,7 +38482,7 @@ GameObject:
   - component: {fileID: 1658812026}
   - component: {fileID: 1658812030}
   m_Layer: 6
-  m_Name: HeavyArmor
+  m_Name: Behemoth
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -38594,7 +38594,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 30
+  m_RootOrder: 19
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!70 &1658812030
 CapsuleCollider2D:
@@ -106812,7 +106812,7 @@ RectTransform:
   - {fileID: 459943387}
   - {fileID: 726995490}
   m_Father: {fileID: 0}
-  m_RootOrder: 23
+  m_RootOrder: 26
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -109280,7 +109280,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 21
+  m_RootOrder: 24
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2085257564
 GameObject:
