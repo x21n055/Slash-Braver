@@ -67,8 +67,6 @@ public class Enemy : MonoBehaviour
         }
         if (!isDead)
         {
-
-
             if (sr.isVisible)
             {
                 if (!attackMode)
