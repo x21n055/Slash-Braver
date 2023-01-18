@@ -134,7 +134,6 @@ public class Player : MonoBehaviour
             {
                 
                 rb2d.AddForce(Vector2.up * jumpImpulse, ForceMode2D.Impulse);
-                Debug.Log("“ñ’i");
             }
 
             if (Input.GetKeyUp(KeyCode.Space))
@@ -201,7 +200,6 @@ public class Player : MonoBehaviour
     {
         currentHealth -= 20;
         HPBar.fillAmount = (float)currentHealth / (float)maxHealth;
-        Debug.Log("‚­‚ç‚Á‚½");
         stopTimeCounter = 0.7f;
         rb2d.velocity = new Vector2(0, 0);
     }

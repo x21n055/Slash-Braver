@@ -3835,7 +3835,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 486908602}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 98.724724, y: 26.758308, z: 0}
+  m_LocalPosition: {x: 98.8, y: 25.7, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -3855,9 +3855,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5de4ef6934b67444aa95773640b9e194, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 0
+  maxHealth: 100
   currentHealth: 0
+  speed: 5
+  attack1Distance: 5
   stopTimeCounter: 0
+  distance: 0
+  range: 0
+  attacking: 0
+  target: {fileID: 1801338439}
+  cantMove: 0
   setPosition: {fileID: 264947416}
   shock:
     m_PersistentCalls:
