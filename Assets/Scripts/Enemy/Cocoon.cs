@@ -11,9 +11,11 @@ public class Cocoon : MonoBehaviour
     public int speed;
     public float attack1Distance;
     public float stopTimeCounter;
+    public float attack1Cool;
+    [SerializeField] private float coolTime;              //攻撃クールタイム
     public float distance;              //プレイヤーとの座標的距離
     public float range;                 //プレイヤーとの距離
-    private bool playerOnTheRight;
+    private bool playerOnTheRight;      //プレイヤーは右にいるか
     public bool attacking = false;
     [SerializeField] GameObject target;
 
@@ -44,6 +46,7 @@ public class Cocoon : MonoBehaviour
         PlayerWhichSide();
         Move();
         Combat();
+        TimeManage();
     }
 
     void Move()
@@ -69,9 +72,10 @@ public class Cocoon : MonoBehaviour
     void Combat()
     {
         range = Vector2.Distance(transform.position, target.transform.position);
-        if (range <= attack1Distance && !attacking)
+        if (range <= attack1Distance && !attacking && coolTime <= 0)
         {
             anime.SetTrigger("HeavyArmor_Attack1");
+            coolTime = attack1Cool;
         }
 
     }
@@ -138,5 +142,8 @@ public class Cocoon : MonoBehaviour
         anime.SetBool("enemy_dead", true);
     }
 
-    
+    void TimeManage() //クールタイムなどを一元化
+    {
+        coolTime -= Time.deltaTime;
+    }
 }

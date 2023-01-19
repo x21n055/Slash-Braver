@@ -15,6 +15,7 @@ public class Player : MonoBehaviour
     public bool attacking;  //アニメーションで管理。プレイヤーが攻撃中かどうか
     public bool nextAttack = true; //プレイヤーが次のコンボ攻撃に移行可能かどうか
     public bool cantMove = false; //プレイヤーが移動不可能かどうか 一部アニメーション管理
+    public bool invincible = false;
 
     public Image HPBar;
 
@@ -33,9 +34,10 @@ public class Player : MonoBehaviour
 
     private Animator anime = null;
     private Rigidbody2D rb2d = null;
+    private SpriteRenderer sr = null;
     private bool isGround;
     private bool isJumping;
-    
+
     private bool fired;
     private float jumpTimeCounter;
     private float stopTimeCounter;
@@ -45,12 +47,14 @@ public class Player : MonoBehaviour
     {
         anime = GetComponent<Animator>();
         rb2d = GetComponent<Rigidbody2D>();
+        sr = GetComponent<SpriteRenderer>();
         currentHealth = maxHealth;
     }
 
     // Update is called once per frame
     void Update()
     {
+        //Debug.Log(invincible);
         if (Input.GetKeyDown(KeyCode.G))
         {
             SceneManager.LoadScene("Title1");
@@ -62,7 +66,7 @@ public class Player : MonoBehaviour
         }
         ComboCheck();
         Jump();
-        
+
 
         //設置判定
         isGround = Physics2D.OverlapCircle(feetPos.position, checkRadius, whatIsGround);
@@ -72,8 +76,8 @@ public class Player : MonoBehaviour
 
     private void FixedUpdate()
     {
-        
-        Move(); 
+
+        Move();
         anime.SetBool("Jump", isJumping);
         anime.SetBool("Ground", isGround);
         rb2d.velocity = new Vector2(horizontalkey * speed, rb2d.velocity.y);
@@ -101,7 +105,7 @@ public class Player : MonoBehaviour
                 anime.SetBool("Run", false);
             }
 
-            
+
         }
     }
 
@@ -132,7 +136,7 @@ public class Player : MonoBehaviour
 
             if (!isJumping && !isGround && Input.GetKeyDown(KeyCode.Space))
             {
-                
+
                 rb2d.AddForce(Vector2.up * jumpImpulse, ForceMode2D.Impulse);
             }
 
@@ -161,7 +165,7 @@ public class Player : MonoBehaviour
     {
         if (attack && nextAttack)
         {
-            anime.SetBool("ComboAttack",true);
+            anime.SetBool("ComboAttack", true);
             attack = false;
         }
         else
@@ -180,28 +184,46 @@ public class Player : MonoBehaviour
             enemy.GetComponent<Enemy>().TakeDamage(attackDamage);
         }
     }
-    
-    
+
+
     private void OnDrawGizmosSelected()
     {
         if (attackPoint == null)
             return;
         Gizmos.DrawWireSphere(attackPoint.position, attackRange);
-        
+
     }
 
     public void GetFireItem()
     {
         fired = true;
-        
+
     }
 
     public void TakeDamage()
     {
-        currentHealth -= 20;
-        HPBar.fillAmount = (float)currentHealth / (float)maxHealth;
-        stopTimeCounter = 0.7f;
-        rb2d.velocity = new Vector2(0, 0);
-    }
+        if (!invincible)
+        {
+            invincible = true;
+            currentHealth -= 20;
+            HPBar.fillAmount = (float)currentHealth / (float)maxHealth;
+            stopTimeCounter = 0.7f;
+            rb2d.velocity = new Vector2(0, 0);
+            StartCoroutine(DamageEffect());
+            IEnumerator DamageEffect()
+            {
+                for (int i = 0; i < 4; i++)
+                {
+                    sr.color = new Color(1, 1, 1, 0);
+                    yield return new WaitForSeconds(0.1f);
+                    sr.color = new Color(1, 1, 1, 1);
+                    yield return new WaitForSeconds(0.1f);
+                }
+                invincible = false;
+            }
+            Debug.Log("くらった");
+        }
+        
 
+    }
 }

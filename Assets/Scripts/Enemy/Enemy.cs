@@ -57,13 +57,13 @@ public class Enemy : MonoBehaviour
 
     void Update()
     {
-        RaycastDebugger();
-        if (attacking) { 
-        Collider2D[] hitPlayer = Physics2D.OverlapCircleAll(attackPoint.position, attackRange, playerLayers);
-        foreach (Collider2D player in hitPlayer)
+        if (attacking)
         {
-            player.GetComponent<Player>().TakeDamage();
-        }
+            Collider2D[] hitPlayer = Physics2D.OverlapCircleAll(attackPoint.position, attackRange, playerLayers);
+            foreach (Collider2D player in hitPlayer)
+            {
+                player.GetComponent<Player>().TakeDamage();
+            }
         }
         if (!isDead)
         {
