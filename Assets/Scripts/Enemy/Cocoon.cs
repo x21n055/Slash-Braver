@@ -3,21 +3,24 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-public class Cocoon : MonoBehaviour
+public class Cocoon : MonoBehaviour, IDamageable
 {
     //データ
     public int maxHealth;
     public int currentHealth;
     public int speed;
-    public float attack1Distance;
-    public float stopTimeCounter;
-    public float attack1Cool;
-    [SerializeField] private float coolTime;              //攻撃クールタイム
+    public float attack1Distance;       //通常近接攻撃
+    public float attack2Distance;       //中距離突進攻撃
+    public float attackAcceleration;    //突進時の加速度
+    public float attack1Cool;           //近接攻撃クールタイム
+    public float attack2Cool;           //中距離突進クールタイム
+    [SerializeField] private float coolTime;              //行動クールタイム
     public float distance;              //プレイヤーとの座標的距離
     public float range;                 //プレイヤーとの距離
     private bool playerOnTheRight;      //プレイヤーは右にいるか
     public bool attacking = false;
     [SerializeField] GameObject target;
+    private Color defaultColor;
 
     //コンポーネント
     private Rigidbody2D rb2d = null;
@@ -25,7 +28,7 @@ public class Cocoon : MonoBehaviour
     private Animator anime = null;
     //コンバットAI
     private bool inCombat = false;  //戦闘状態を判定
-    private bool looming = false;   //プレイヤーに接近
+    private bool approachingPlayer = false;   //プレイヤーに接近
     public bool cantMove = false;  //硬直状態
     public Transform setPosition;   //敵の初期配置場所
     public UnityEvent shock;        //被ダメ衝撃
@@ -37,46 +40,70 @@ public class Cocoon : MonoBehaviour
         currentHealth = maxHealth;
         rb2d = GetComponent<Rigidbody2D>();
         sr = GetComponent<SpriteRenderer>();
+        defaultColor = sr.color;
         anime = GetComponent<Animator>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        PlayerWhichSide();
-        Move();
-        Combat();
-        TimeManage();
+        if (!isDead)
+        {
+            PlayerWhichSide();
+            Move();
+            Combat();
+            TimeManage();
+        }
+        
     }
 
     void Move()
     {
-        if (!cantMove && looming)
+        if (!cantMove && approachingPlayer && range >= attack1Distance)
         {
             anime.SetBool("HeavyArmor_Walk", true);
             if (playerOnTheRight)
             {
+                rb2d.velocity = new Vector2(0,0);
                 rb2d.velocity = new Vector2(speed, rb2d.velocity.y);
             }
             else if(!playerOnTheRight)
             {
+                rb2d.velocity = new Vector2(0, 0);
                 rb2d.velocity = new Vector2(-speed, rb2d.velocity.y);
             }
         }
-        else if(cantMove)
+        else if (!cantMove && approachingPlayer && !(range >= attack1Distance))
         {
-            rb2d.velocity = new Vector2(0, rb2d.velocity.y);
+            anime.SetBool("HeavyArmor_Walk", false);
+            rb2d.velocity = new Vector2(0, 0);
         }
     }
 
     void Combat()
     {
         range = Vector2.Distance(transform.position, target.transform.position);
-        if (range <= attack1Distance && !attacking && coolTime <= 0)
+        if (inCombat)
         {
-            anime.SetTrigger("HeavyArmor_Attack1");
-            coolTime = attack1Cool;
+            if (range <= attack2Distance && !attacking && coolTime <= 0 && attack2Cool <= 0)
+            {
+                Flip();
+                rb2d.velocity = new Vector2(0, 0);
+                anime.SetBool("HeavyArmor_Walk", false);
+                anime.SetTrigger("HeavyArmor_Attack3");
+                coolTime = 3;
+                attack2Cool = 7;
+            }
+            else if (range <= attack1Distance && !attacking && coolTime <= 0 && attack1Cool <= 0)
+            {
+                rb2d.velocity = new Vector2(0, 0);
+                anime.SetBool("HeavyArmor_Walk", false);
+                anime.SetTrigger("HeavyArmor_Attack1");
+                coolTime = 3;
+                attack1Cool = 3;
+            }
         }
+       
 
     }
 
@@ -85,25 +112,32 @@ public class Cocoon : MonoBehaviour
     {
         if (trig.gameObject.tag == "Player")
         {
-            Debug.Log("戦闘状態");
             inCombat = true;
-            looming = true;
+            approachingPlayer = true;
         }
     }
     
     public void TakeDamage(int damage)  //被ダメ
     {
-        if (!isDead)
+        if (!isDead && !attacking)
         {
 
             shock.Invoke();
             currentHealth -= damage;
-            stopTimeCounter = 0.4f;
-            anime.SetTrigger("enemy_damaged");
-            if (currentHealth <= 0)
+            StartCoroutine(DamageEffect());
+            IEnumerator DamageEffect()
             {
-                isDead = true;
-                Die();
+
+                for (int i = 0; i < 1; i++)
+                {
+                    sr.color = sr.color == defaultColor ? Color.white : defaultColor;
+                    yield return new WaitForSeconds(0.1f);
+                }
+                if (currentHealth <= 0)
+                {
+                    isDead = true;
+                    Die();
+                }
             }
         }
     }
@@ -137,13 +171,28 @@ public class Cocoon : MonoBehaviour
         }
     }
 
+    public void Accelerate()
+    {
+        if (this.transform.localScale.x == -1)
+        {
+            rb2d.velocity = new Vector2(-attackAcceleration, rb2d.velocity.y);
+        }
+        else if (this.transform.localScale.x == 1)
+        {
+            rb2d.velocity = new Vector2(attackAcceleration, rb2d.velocity.y);
+        }
+    }
     void Die()  //死亡
     {
-        anime.SetBool("enemy_dead", true);
+        anime.SetBool("HeavyArmor_Dead", true);
     }
 
     void TimeManage() //クールタイムなどを一元化
     {
         coolTime -= Time.deltaTime;
+        attack1Cool -= Time.deltaTime;
+        attack2Cool -= Time.deltaTime;
     }
+
+    
 }

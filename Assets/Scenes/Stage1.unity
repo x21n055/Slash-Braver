@@ -2247,7 +2247,8 @@ GameObject:
   m_Component:
   - component: {fileID: 338378757}
   - component: {fileID: 338378758}
-  m_Layer: 6
+  - component: {fileID: 338378759}
+  m_Layer: 9
   m_Name: Attack1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2294,11 +2295,24 @@ PolygonCollider2D:
   m_AutoTiling: 0
   m_Points:
     m_Paths:
-    - - {x: 2.0376358, y: -3.5709038}
-      - {x: 11.825448, y: -3.6010344}
-      - {x: 14.391562, y: 2.8256779}
-      - {x: 12.978785, y: 14.445688}
-      - {x: 2.0524817, y: 14.407225}
+    - - {x: -1.1815948, y: -3.6457691}
+      - {x: 10.852197, y: -3.526169}
+      - {x: 11.995856, y: -0.54328346}
+      - {x: 9.160639, y: 3.1409512}
+      - {x: 3.660904, y: 4.8924446}
+      - {x: -0.4929514, y: 4.8244}
+--- !u!114 &338378759
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 338378756}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 314f9729ea765b44888022384f47b788, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &342424255
 GameObject:
   m_ObjectHideFlags: 0
@@ -2793,7 +2807,7 @@ MonoBehaviour:
     m_DissipationMode: 2
     m_DissipationDistance: 100
     m_PropagationSpeed: 343
-  m_DefaultVelocity: {x: 0, y: -1, z: 0}
+  m_DefaultVelocity: {x: 0, y: -0.5, z: 0}
 --- !u!1 &394722203
 GameObject:
   m_ObjectHideFlags: 0
@@ -3695,7 +3709,7 @@ MonoBehaviour:
     m_DissipationMode: 2
     m_DissipationDistance: 100
     m_PropagationSpeed: 343
-  m_DefaultVelocity: {x: 0, y: -1, z: 0}
+  m_DefaultVelocity: {x: 0, y: -0.5, z: 0}
 --- !u!1 &466940940
 GameObject:
   m_ObjectHideFlags: 0
@@ -3773,6 +3787,7 @@ GameObject:
   - component: {fileID: 486908604}
   - component: {fileID: 486908603}
   - component: {fileID: 486908608}
+  - component: {fileID: 486908609}
   m_Layer: 6
   m_Name: Cocoon
   m_TagString: Untagged
@@ -3834,8 +3849,8 @@ CapsuleCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
-  m_Size: {x: 4.22, y: 7.14}
+  m_Offset: {x: 0.86, y: 0}
+  m_Size: {x: 6.71, y: 7.87}
   m_Direction: 0
 --- !u!212 &486908606
 SpriteRenderer:
@@ -3857,7 +3872,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  - {fileID: 2100000, guid: 9dfc825aed78fcd4ba02077103263b40, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -3921,9 +3936,11 @@ MonoBehaviour:
   maxHealth: 100
   currentHealth: 0
   speed: 5
-  attack1Distance: 5
-  stopTimeCounter: 0
+  attack1Distance: 8
+  attack2Distance: 15
+  attackAcceleration: 72.12
   attack1Cool: 3
+  attack2Cool: 8
   coolTime: 0
   distance: 0
   range: 0
@@ -3933,7 +3950,72 @@ MonoBehaviour:
   setPosition: {fileID: 264947416}
   shock:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 486908609}
+        m_TargetAssemblyTypeName: Cinemachine.CinemachineImpulseSource, Cinemachine
+        m_MethodName: GenerateImpulse
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!114 &486908609
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 486908602}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 180ecf9b41d478f468eb3e9083753217, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_ImpulseDefinition:
+    m_ImpulseChannel: 1
+    m_ImpulseShape: 2
+    m_CustomImpulseShape:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    m_ImpulseDuration: 0.2
+    m_ImpulseType: 0
+    m_DissipationRate: 0.25
+    m_RawSignal: {fileID: 0}
+    m_AmplitudeGain: 1
+    m_FrequencyGain: 1
+    m_RepeatMode: 0
+    m_Randomize: 1
+    m_TimeEnvelope:
+      m_AttackShape:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      m_DecayShape:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      m_AttackTime: 0
+      m_SustainTime: 0.2
+      m_DecayTime: 0.7
+      m_ScaleWithImpact: 1
+      m_HoldForever: 0
+    m_ImpactRadius: 100
+    m_DirectionMode: 0
+    m_DissipationMode: 2
+    m_DissipationDistance: 100
+    m_PropagationSpeed: 343
+  m_DefaultVelocity: {x: 0, y: -1, z: 0}
 --- !u!1 &492146622
 GameObject:
   m_ObjectHideFlags: 0
@@ -5564,16 +5646,6 @@ Tilemap:
       serializedVersion: 2
       m_TileIndex: 2
       m_TileSpriteIndex: 6
-      m_TileMatrixIndex: 0
-      m_TileColorIndex: 0
-      m_TileObjectToInstantiateIndex: 65535
-      dummyAlignment: 0
-      m_AllTileFlags: 1073741825
-  - first: {x: 13, y: -1, z: 0}
-    second:
-      serializedVersion: 2
-      m_TileIndex: 1
-      m_TileSpriteIndex: 1
       m_TileMatrixIndex: 0
       m_TileColorIndex: 0
       m_TileObjectToInstantiateIndex: 65535
@@ -9613,7 +9685,7 @@ Tilemap:
   m_TileAssetArray:
   - m_RefCount: 164
     m_Data: {fileID: 11400000, guid: 1dec7392a50e9474b8df012c81ebaf16, type: 2}
-  - m_RefCount: 32
+  - m_RefCount: 31
     m_Data: {fileID: 11400000, guid: 1df20223075b51d44ad0b4624493d5a6, type: 2}
   - m_RefCount: 5
     m_Data: {fileID: 11400000, guid: 76bf3e223deed0643b39a996a0f560b8, type: 2}
@@ -9722,7 +9794,7 @@ Tilemap:
   m_TileSpriteArray:
   - m_RefCount: 164
     m_Data: {fileID: 21300150, guid: f5091b27a656f437094000095b53c3e9, type: 3}
-  - m_RefCount: 32
+  - m_RefCount: 31
     m_Data: {fileID: 21300152, guid: f5091b27a656f437094000095b53c3e9, type: 3}
   - m_RefCount: 0
     m_Data: {fileID: 0}
@@ -9829,7 +9901,7 @@ Tilemap:
   - m_RefCount: 1
     m_Data: {fileID: 21300050, guid: f5091b27a656f437094000095b53c3e9, type: 3}
   m_TileMatrixArray:
-  - m_RefCount: 440
+  - m_RefCount: 439
     m_Data:
       e00: 1
       e01: 0
@@ -9920,7 +9992,7 @@ Tilemap:
       e32: 0
       e33: 1
   m_TileColorArray:
-  - m_RefCount: 478
+  - m_RefCount: 477
     m_Data: {r: 1, g: 1, b: 1, a: 1}
   m_TileObjectToInstantiateArray: []
   m_AnimationFrameRate: 1
@@ -31257,7 +31329,7 @@ MonoBehaviour:
     m_DissipationMode: 2
     m_DissipationDistance: 100
     m_PropagationSpeed: 343
-  m_DefaultVelocity: {x: 0, y: -1, z: 0}
+  m_DefaultVelocity: {x: 0, y: -0.5, z: 0}
 --- !u!1 &1287138893
 GameObject:
   m_ObjectHideFlags: 0
@@ -107665,7 +107737,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -565566123
   m_SortingLayer: 8
-  m_SortingOrder: 0
+  m_SortingOrder: 1
   m_Sprite: {fileID: 21300112, guid: 7810966f0f690954c87305933cabf2b0, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -108014,6 +108086,7 @@ MonoBehaviour:
   attack: 0
   attacking: 0
   nextAttack: 0
+  isEnemyLeft: 0
   cantMove: 0
   invincible: 0
   HPBar: {fileID: 1982645166}
@@ -108021,6 +108094,7 @@ MonoBehaviour:
   jumpForce: 20
   jumpImpulse: 30
   jumpTimer: 0.6
+  knockBackForce: 30
   checkRadius: 0.3
   attackRange: 0
   horizontalkey: 0

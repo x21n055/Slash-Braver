@@ -4,6 +4,10 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
+interface IDamageable   //ダメージを与えることができるものへの共通インターフェイス
+{
+    void TakeDamage(int damage);
+}
 public class Player : MonoBehaviour
 {
     public int attackDamage;
@@ -14,6 +18,7 @@ public class Player : MonoBehaviour
     public bool attack = false;    //プレイヤーが攻撃中に攻撃ボタンを押したかどうか
     public bool attacking;  //アニメーションで管理。プレイヤーが攻撃中かどうか
     public bool nextAttack = true; //プレイヤーが次のコンボ攻撃に移行可能かどうか
+    public bool isEnemyLeft = false;       //敵が右にいる前提
     public bool cantMove = false; //プレイヤーが移動不可能かどうか 一部アニメーション管理
     public bool invincible = false;
 
@@ -23,6 +28,7 @@ public class Player : MonoBehaviour
     public float jumpForce;
     public float jumpImpulse;   //二段ジャンプ時の飛び具合
     public float jumpTimer;
+    public float knockBackForce;
     public float checkRadius;
     public float attackRange = 0.5f;
     public float horizontalkey;
@@ -40,8 +46,10 @@ public class Player : MonoBehaviour
 
     private bool fired;
     private float jumpTimeCounter;
-    private float stopTimeCounter;
+    private float freezeTime;
 
+
+    
     // Start is called before the first frame update
     void Start()
     {
@@ -54,7 +62,9 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        //Debug.Log(horizontalkey);
         //Debug.Log(invincible);
+        freezeTime -= Time.deltaTime;
         if (Input.GetKeyDown(KeyCode.G))
         {
             SceneManager.LoadScene("Title1");
@@ -66,8 +76,21 @@ public class Player : MonoBehaviour
         }
         ComboCheck();
         Jump();
-
-
+        if (Input.GetKeyUp(KeyCode.D) || Input.GetKeyUp(KeyCode.A))
+        {
+            horizontalkey = 0;
+            anime.SetBool("Run", false);
+        }
+        else
+        {
+            Flip();
+        }
+        Move();
+        if (freezeTime <= 0)
+        {
+            rb2d.velocity = new Vector2(horizontalkey * speed, rb2d.velocity.y);
+        }
+        
         //設置判定
         isGround = Physics2D.OverlapCircle(feetPos.position, checkRadius, whatIsGround);
 
@@ -77,18 +100,36 @@ public class Player : MonoBehaviour
     private void FixedUpdate()
     {
 
-        Move();
+        
         anime.SetBool("Jump", isJumping);
         anime.SetBool("Ground", isGround);
-        rb2d.velocity = new Vector2(horizontalkey * speed, rb2d.velocity.y);
     }
 
-    //横移動
     void Move()
+    {
+        if (Input.GetKey(KeyCode.D) && Input.GetKey(KeyCode.A))
+        {
+            horizontalkey = 0;
+        } 
+        else if (Input.GetKey(KeyCode.D) && !(horizontalkey == 1))
+        {
+            horizontalkey += 1;
+        }
+        else if (Input.GetKey(KeyCode.A) && !(horizontalkey == -1))
+        {
+            horizontalkey -= 1;
+        }
+        else if (!(Input.GetKey(KeyCode.A)) && !(Input.GetKey(KeyCode.D)))
+        {
+            horizontalkey = 0;
+        }
+    }
+    //横移動
+    void Flip()
     {
         if (!cantMove)
         {
-            horizontalkey = Input.GetAxis("Horizontal");
+            
             //横移動
             if (horizontalkey > 0)
             {
@@ -104,8 +145,6 @@ public class Player : MonoBehaviour
             {
                 anime.SetBool("Run", false);
             }
-
-
         }
     }
 
@@ -181,8 +220,14 @@ public class Player : MonoBehaviour
 
         foreach (Collider2D enemy in hitEnemies)
         {
-            enemy.GetComponent<Enemy>().TakeDamage(attackDamage);
+            IDamageable damageable = enemy.GetComponent<IDamageable>();
+            if (damageable != null)
+            {
+                damageable.TakeDamage(attackDamage);
+            }
+            
         }
+
     }
 
 
@@ -200,15 +245,19 @@ public class Player : MonoBehaviour
 
     }
 
-    public void TakeDamage()
+    public void TakeDamage(GameObject enemy,int damage)
     {
         if (!invincible)
         {
             invincible = true;
-            currentHealth -= 20;
+            currentHealth -= damage;
             HPBar.fillAmount = (float)currentHealth / (float)maxHealth;
-            stopTimeCounter = 0.7f;
+            freezeTime = 0.1f;
             rb2d.velocity = new Vector2(0, 0);
+            isEnemyLeft = this.transform.position.x > enemy.transform.position.x;
+            Vector2 knockBackDirection = isEnemyLeft ? Vector2.right : Vector2.left;
+            rb2d.AddForce(knockBackDirection * knockBackForce, ForceMode2D.Impulse);
+            transform.localScale = new Vector3(isEnemyLeft ? -1 : 1, 1, 1);
             StartCoroutine(DamageEffect());
             IEnumerator DamageEffect()
             {

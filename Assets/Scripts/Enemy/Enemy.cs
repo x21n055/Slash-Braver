@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-public class Enemy : MonoBehaviour
+public class Enemy : MonoBehaviour,IDamageable
 {
     public Animator anime = null;
     public int maxHealth = 100;
@@ -62,7 +62,7 @@ public class Enemy : MonoBehaviour
             Collider2D[] hitPlayer = Physics2D.OverlapCircleAll(attackPoint.position, attackRange, playerLayers);
             foreach (Collider2D player in hitPlayer)
             {
-                player.GetComponent<Player>().TakeDamage();
+                player.GetComponent<Player>().TakeDamage(this.gameObject,20);
             }
         }
         if (!isDead)
