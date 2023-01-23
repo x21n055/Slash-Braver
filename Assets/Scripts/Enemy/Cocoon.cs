@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-public class Cocoon : MonoBehaviour, IDamageable
+public class Cocoon : MonoBehaviour, IDamageable ,Area4
 {
     //データ
     public int maxHealth;
@@ -108,15 +108,12 @@ public class Cocoon : MonoBehaviour, IDamageable
     }
 
     //プレイヤー発見 戦闘Stateへ移行
-    void OnTriggerEnter2D(Collider2D trig)
+    public void IEngage()
     {
-        if (trig.gameObject.tag == "Player")
-        {
             inCombat = true;
             approachingPlayer = true;
-        }
     }
-    
+
     public void TakeDamage(int damage)  //被ダメ
     {
         if (!isDead && !attacking)
