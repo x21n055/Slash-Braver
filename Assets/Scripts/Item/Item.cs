@@ -28,7 +28,7 @@ public class Item : MonoBehaviour
         Collider2D[] hitPlayer = Physics2D.OverlapCircleAll(getPoint.position, getRadius, playerLayers);
         foreach (Collider2D player in hitPlayer)
         {
-            player.GetComponent<Player>().GetFireItem();
+            //player.GetComponent<Player>().GetFireItem();
             Destroy(this.gameObject);
         }
     }

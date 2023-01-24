@@ -25,6 +25,10 @@ public class Player : MonoBehaviour
     public Image HPBar;
 
     public float speed;
+    public float blinkTime;     //ダッシュする時間
+    public float blinkTimer;    //実測ダッシュ時間
+    public float blinkCoolTime; //ダッシュクール時間
+
     public float jumpForce;
     public float jumpImpulse;   //二段ジャンプ時の飛び具合
     public float jumpTimer;
@@ -43,8 +47,8 @@ public class Player : MonoBehaviour
     private SpriteRenderer sr = null;
     private bool isGround;
     private bool isJumping;
+    private bool blink = false;
 
-    private bool fired;
     private float jumpTimeCounter;
     private float freezeTime;
 
@@ -64,7 +68,8 @@ public class Player : MonoBehaviour
     {
         //Debug.Log(horizontalkey);
         //Debug.Log(invincible);
-        freezeTime -= Time.deltaTime;
+        TimeOrdhin();
+        
         if (Input.GetKeyDown(KeyCode.G))
         {
             SceneManager.LoadScene("Title1");
@@ -86,11 +91,14 @@ public class Player : MonoBehaviour
             Flip();
         }
         Move();
-        if (freezeTime <= 0)
+        if (freezeTime <= 0 && !blink)
         {
             rb2d.velocity = new Vector2(horizontalkey * speed, rb2d.velocity.y);
         }
-        
+
+        //ダッシュ
+        Blink();
+
         //設置判定
         isGround = Physics2D.OverlapCircle(feetPos.position, checkRadius, whatIsGround);
 
@@ -148,6 +156,42 @@ public class Player : MonoBehaviour
         }
     }
 
+    //ダッシュ
+    void Blink()
+    {
+        if (Input.GetKeyDown(KeyCode.LeftShift) && blinkCoolTime <= 0)
+        {
+            blink = true;
+            blinkTimer = blinkTime;
+        }
+        if (blink)
+        {
+            if (blinkTimer <= 0)
+            {
+                blink = false;
+                rb2d.velocity = Vector2.zero;
+            }
+            else
+            {
+                if (this.gameObject.transform.localScale.x == 1)
+                {
+                    rb2d.velocity = Vector2.right * speed * 3;
+                    anime.SetTrigger("Blink");
+                    freezeTime = 0.2f;
+                    blinkCoolTime = 0.6f;
+                }
+                else if (this.gameObject.transform.localScale.x == -1)
+                {
+                    rb2d.velocity = Vector2.left * speed * 3;
+                    anime.SetTrigger("Blink");
+                    freezeTime = 0.2f;
+                    blinkCoolTime = 0.6f;
+                }
+                
+            }
+        }
+    }
+
     //ジャンプ
     void Jump()
     {
@@ -165,7 +209,6 @@ public class Player : MonoBehaviour
                 if (jumpTimeCounter > 0)
                 {
                     rb2d.velocity = Vector2.up * jumpForce;
-                    jumpTimeCounter -= Time.deltaTime;
                 }
                 else
                 {
@@ -240,12 +283,6 @@ public class Player : MonoBehaviour
 
     }
 
-    public void GetFireItem()
-    {
-        fired = true;
-
-    }
-
     public void TakeDamage(GameObject enemy,int damage)
     {
         if (!invincible)
@@ -274,6 +311,15 @@ public class Player : MonoBehaviour
             Debug.Log("くらった");
         }
         
+
+    }
+
+    void TimeOrdhin()
+    {
+        freezeTime -= Time.deltaTime;   //硬直時間
+        blinkTimer -= Time.deltaTime;   //ブリンク時間
+        blinkCoolTime -= Time.deltaTime;//ブリンククールタイム
+        jumpTimeCounter -= Time.deltaTime;
 
     }
 }
