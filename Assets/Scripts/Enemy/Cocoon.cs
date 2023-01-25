@@ -108,7 +108,7 @@ public class Cocoon : MonoBehaviour, IDamageable ,Area4
     }
 
     //プレイヤー発見 戦闘Stateへ移行
-    public void IEngage()
+    public void IEngage(int area)
     {
             inCombat = true;
             approachingPlayer = true;

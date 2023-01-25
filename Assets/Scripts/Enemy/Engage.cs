@@ -21,7 +21,6 @@ public class Engage : MonoBehaviour
         if (trig.gameObject.tag == "Player")
         {
             engage = true;
-            Debug.Log("プレイヤーを検知");
         }
 
     }
@@ -31,11 +30,9 @@ public class Engage : MonoBehaviour
         if (trig.gameObject.tag == "Enemy")
         {
             Area4 engageScript = trig.gameObject.GetComponentInParent<Area4>();
-            Debug.Log(engageScript);
             if (engageScript != null && engage)
             {
-                engageScript.IEngage();
-                Debug.Log("エンゲージ関数を呼び出す");
+                engageScript.IEngage(area);
             }
         }
     }
