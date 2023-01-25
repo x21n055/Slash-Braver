@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-public class Cocoon : MonoBehaviour, IDamageable ,Area4
+public class Cocoon : MonoBehaviour, IDamageable, Area4
 {
     //データ
     public int maxHealth;
     public int currentHealth;
     public int speed;
+    public int thisArea;
     public float attack1Distance;       //通常近接攻撃
     public float attack2Distance;       //中距離突進攻撃
     public float attackAcceleration;    //突進時の加速度
@@ -110,8 +111,12 @@ public class Cocoon : MonoBehaviour, IDamageable ,Area4
     //プレイヤー発見 戦闘Stateへ移行
     public void IEngage(int area)
     {
+        if (area == thisArea)
+        {
             inCombat = true;
             approachingPlayer = true;
+        }
+            
     }
 
     public void TakeDamage(int damage)  //被ダメ
