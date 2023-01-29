@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-interface Area4
+interface Area
 {
     void IEngage(int area);
 }
@@ -20,6 +20,7 @@ public class Engage : MonoBehaviour
         
         if (trig.gameObject.tag == "Player")
         {
+            //Debug.Log("ÉvÉåÉCÉÑÅ[î≠å©");
             engage = true;
         }
 
@@ -27,13 +28,19 @@ public class Engage : MonoBehaviour
 
     private void OnTriggerStay2D(Collider2D trig)
     {
-        if (trig.gameObject.tag == "Enemy" && engage)
+        if (trig.gameObject.tag == "Enemy")
         {
-            Area4 engageScript = trig.gameObject.GetComponentInParent<Area4>();
-            if (engageScript != null)
+            //Debug.Log("ìGÇ™ë∂ç›");
+            if (engage)
             {
-                engageScript.IEngage(area);
+                Area engageScript = trig.gameObject.GetComponentInParent<Area>();
+                
+                if (engageScript != null)
+                {
+                    engageScript.IEngage(area);
+                }
             }
+            
             
         }
     }

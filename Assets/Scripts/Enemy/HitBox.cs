@@ -8,7 +8,12 @@ public class HitBox : MonoBehaviour
     {
         if (player.gameObject.tag == "Player")
         {
-            player.GetComponent<Player>().TakeDamage(this.gameObject, 40);
+            Player playerScript = player.GetComponent<Player>();
+            if (playerScript != null)
+            {
+                playerScript.TakeDamage(this.gameObject, 40);
+            }
+            
         }
     }
 }

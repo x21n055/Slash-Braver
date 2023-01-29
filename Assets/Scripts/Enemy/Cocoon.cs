@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-public class Cocoon : MonoBehaviour, IDamageable, Area4
+public class Cocoon : MonoBehaviour, IDamageable, Area
 {
     //データ
     public int maxHealth;
@@ -121,7 +121,7 @@ public class Cocoon : MonoBehaviour, IDamageable, Area4
 
     public void TakeDamage(int damage)  //被ダメ
     {
-        if (!isDead && !attacking)
+        if (!isDead)
         {
 
             shock.Invoke();
@@ -130,9 +130,9 @@ public class Cocoon : MonoBehaviour, IDamageable, Area4
             IEnumerator DamageEffect()
             {
 
-                for (int i = 0; i < 1; i++)
+                for (int i = 0; i < 2; i++)
                 {
-                    sr.color = sr.color == defaultColor ? Color.white : defaultColor;
+                    sr.color = sr.color == defaultColor ? Color.red : defaultColor;
                     yield return new WaitForSeconds(0.1f);
                 }
                 if (currentHealth <= 0)

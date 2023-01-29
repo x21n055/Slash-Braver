@@ -3,273 +3,168 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-public class Enemy : MonoBehaviour,IDamageable
+public class Enemy : MonoBehaviour, IDamageable, Area
 {
-    public Animator anime = null;
-    public int maxHealth = 100;
-    public UnityEvent shock;
+    public int maxHealth;
+    public int currentHealth;
+    public int speed;
+    public int thisArea;
+    public float attack1Distance;       //通常近接攻撃
+    public float attack1Cool;           //近接攻撃クールタイム
+    [SerializeField] private float coolTime;              //行動クールタイム
+    public float distance;              //プレイヤーとの座標的距離
+    public float range;                 //プレイヤーとの距離
+    private bool playerOnTheRight;      //プレイヤーは右にいるか
+    public bool attacking = false;
+    [SerializeField] GameObject target;
+    private Color defaultColor;
 
-    public float moveSpeed;
+    //コンポーネント
+    private Rigidbody2D rb2d = null;
+    private SpriteRenderer sr = null;
+    private Animator anime = null;
 
     //コンバットAI
-    public Transform rayCast;
-    public Transform attackPoint;
-    public LayerMask raycastMask;
-    public LayerMask playerLayers;
-    public float rayCastLength;
-    public float attackDistance; //Minimum distance for attack
-    public float timer; //Timer for cooldown between attacks
-    public Transform leftLimit;
-    public Transform rightLimit;
-    public float attackRange = 0.5f;
-    public bool attacking;
-    public bool cantMove = false;
-    public float stopTimeCounter;
-
-    private SpriteRenderer sr = null;
-    private Rigidbody2D rb2d = null;
-    private bool isDead = false;
-
-    private RaycastHit2D hit;
-    private Transform target;
-    private float distance; //Store the distance b/w enemy and player
-    private bool attackMode;
-    private bool inRange; //Check if Player is in range
-    private bool cooling; //Check if Enemy is cooling after attack
-    private float intTimer;
-
-    void Awake()
-    {
-        SelectTarget();
-        intTimer = timer; //Store the inital value of timer
-    }
-
-
-    int currentHealth;
-    // Start is called before the first frame update
+    private bool inCombat = false;  //戦闘状態を判定
+    private bool approachingPlayer = false;   //プレイヤーに接近
+    public bool cantMove = false;  //硬直状態
+    public Transform setPosition;   //敵の初期配置場所
+    public UnityEvent shock;        //被ダメ衝撃
+    private bool isDead = false;    //死亡
     void Start()
     {
         currentHealth = maxHealth;
-        anime = GetComponent<Animator>();
-        sr = GetComponent<SpriteRenderer>();
         rb2d = GetComponent<Rigidbody2D>();
+        sr = GetComponent<SpriteRenderer>();
+        defaultColor = sr.color;
+        anime = GetComponent<Animator>();
     }
 
     void Update()
     {
-        if (attacking)
-        {
-            Collider2D[] hitPlayer = Physics2D.OverlapCircleAll(attackPoint.position, attackRange, playerLayers);
-            foreach (Collider2D player in hitPlayer)
-            {
-                player.GetComponent<Player>().TakeDamage(this.gameObject,20);
-            }
-        }
         if (!isDead)
         {
-            if (sr.isVisible)
-            {
-                if (!attackMode)
-                {
-                    Move();
-                }
-
-                if (!InsideOfLimits() && !inRange && !anime.GetCurrentAnimatorStateInfo(0).IsName("Enemy_Attack"))
-                {
-                    SelectTarget();
-                }
-
-                if (inRange)
-                {
-                    hit = Physics2D.Raycast(rayCast.position, transform.right, rayCastLength, raycastMask);
-                }
-
-                if (hit.collider != null)
-                {
-                    EnemyLogic();
-                }
-                else if (hit.collider == null)
-                {
-                    inRange = false;
-                }
-
-                if (inRange == false)
-                {
-                    StopAttack();
-                }
-
-            }
-            else
-            {
-                rb2d.Sleep();
-            }
+            PlayerWhichSide();
+            Move();
+            Combat();
+            TimeManage();
         }
+
     }
-
-    void OnTriggerEnter2D(Collider2D trig)
-    {
-        if (trig.gameObject.tag == "Player")
-        {
-            target = trig.transform;
-            inRange = true;
-            Flip();
-        }
-    }
-
-    void EnemyLogic()
-    {
-        distance = Vector2.Distance(transform.position, target.position);
-
-        if (distance > attackDistance)
-        {
-            StopAttack();
-        }
-        else if (attackDistance >= distance && cooling == false)
-        {
-            Attack();
-        }
-
-        if (cooling)
-        {
-            Cooldown();
-            anime.SetBool("enemy_attack", false);
-        }
-    }
-
     void Move()
     {
-        if (!cantMove)
+        if (!cantMove && approachingPlayer && range >= attack1Distance)
         {
             anime.SetBool("enemy_run", true);
-
-            if (!anime.GetCurrentAnimatorStateInfo(0).IsName("Enemy_Attack"))
+            if (playerOnTheRight)
             {
-                Vector2 targetPosition = new Vector2(target.position.x, transform.position.y);
-
-                transform.position = Vector2.MoveTowards(transform.position, targetPosition, moveSpeed * Time.deltaTime);
+                rb2d.velocity = new Vector2(0, 0);
+                rb2d.velocity = new Vector2(speed, rb2d.velocity.y);
+            }
+            else if (!playerOnTheRight)
+            {
+                rb2d.velocity = new Vector2(0, 0);
+                rb2d.velocity = new Vector2(-speed, rb2d.velocity.y);
             }
         }
-    }
-
-    void Attack()
-    {
-        timer = intTimer; //Reset Timer when Player enter Attack Range
-        attackMode = true; //To check if Enemy can still attack or not
-        anime.SetBool("enemy_run", false);
-        anime.SetBool("enemy_attack", true);
-        Flip();
-    }
-
-    void Cooldown()
-    {
-        timer -= Time.deltaTime;
-
-        if (timer <= 0 && cooling && attackMode)
+        else if (!cantMove && approachingPlayer && !(range >= attack1Distance))
         {
-            cooling = false;
-            timer = intTimer;
+            anime.SetBool("enemy_run", false);
+            rb2d.velocity = new Vector2(0, 0);
         }
     }
 
-    void StopAttack()
+    void Combat()
     {
-        cooling = false;
-        attackMode = false;
-        anime.SetBool("enemy_attack", false);
-    }
-
-    public void TriggerCooling()
-    {
-        cooling = true;
-    }
-
-    private bool InsideOfLimits()
-    {
-        return transform.position.x > leftLimit.position.x && transform.position.x < rightLimit.position.x;
-    }
-
-    private void SelectTarget()
-    {
-        float distanceToLeft = Vector3.Distance(transform.position, leftLimit.position);
-        float distanceToRight = Vector3.Distance(transform.position, rightLimit.position);
-
-        if (distanceToLeft > distanceToRight)
+        range = Vector2.Distance(transform.position, target.transform.position);
+        if (inCombat)
         {
-            target = leftLimit;
-        }
-        else
-        {
-            target = rightLimit;
-        }
-
-        //Ternary Operator
-        //target = distanceToLeft > distanceToRight ? leftLimit : rightLimit;
-
-        Flip();
-    }
-
-    void Flip()
-    {
-        if (!isDead && !cantMove)
-        {
-            Vector3 rotation = transform.eulerAngles;
-            if (transform.position.x > target.position.x)
+            if (range <= attack1Distance && !attacking && coolTime <= 0 && attack1Cool <= 0)
             {
-                rotation.y = 180;
+                rb2d.velocity = new Vector2(0, 0);
+                anime.SetBool("enemy_run", false);
+                anime.SetTrigger("attack");
+                coolTime = 3;
+                attack1Cool = 3;
             }
-            else
-            {
-                rotation.y = 0;
-            }
-
-            //Ternary Operator
-            //rotation.y = (currentTarget.position.x < transform.position.x) ? rotation.y = 180f : rotation.y = 0f;
-
-            transform.eulerAngles = rotation;
         }
+
+
     }
 
-    public void TakeDamage(int damage)
+    //プレイヤー発見 戦闘Stateへ移行
+    public void IEngage(int area)
+    {
+        if (area == thisArea)
+        {
+            inCombat = true;
+            approachingPlayer = true;
+        }
+
+    }
+
+    public void TakeDamage(int damage)  //被ダメ
     {
         if (!isDead)
         {
 
             shock.Invoke();
             currentHealth -= damage;
-            stopTimeCounter = 0.4f;
-            anime.SetTrigger("enemy_damaged");
-            if (currentHealth <= 0)
+            StartCoroutine(DamageEffect());
+            IEnumerator DamageEffect()
             {
-                isDead = true;
-                Die();
+                anime.SetTrigger("enemy_damaged");
+                for (int i = 0; i < 2; i++)
+                {
+                    sr.color = sr.color == defaultColor ? Color.red : defaultColor;
+                    yield return new WaitForSeconds(0.1f);
+                }
+                if (currentHealth <= 0)
+                {
+                    isDead = true;
+                    Die();
+                }
             }
         }
     }
 
-    private void OnDrawGizmosSelected()
+    void PlayerWhichSide() //プレイヤーが右にいるか左にいるか判定を行い、Flipに引数を渡す
     {
-        if (attackPoint == null)
-            return;
-        Gizmos.DrawWireSphere(attackPoint.position, attackRange);
-
+        distance = this.gameObject.transform.position.x - target.transform.position.x;
+        if (distance < 0)
+        {
+            playerOnTheRight = true;
+        }
+        else if (distance > 0)
+        {
+            playerOnTheRight = false;
+        }
+        Flip();
     }
 
-    void Die()
+    void Flip()    //PlayerWhichSide()から引数を受け取り、それに応じてフリップする
+    {
+        if (!isDead && !cantMove)
+        {
+            if (playerOnTheRight)
+            {
+                transform.localScale = new Vector3(-1, 1, 1);
+            }
+            else
+            {
+                transform.localScale = new Vector3(1, 1, 1);
+            }
+        }
+    }
+
+    void Die()  //死亡
     {
         anime.SetBool("enemy_dead", true);
     }
 
-
-    void RaycastDebugger()
+    void TimeManage() //クールタイムなどを一元化
     {
-        if (distance > attackDistance)
-        {
-            Debug.DrawRay(rayCast.position, transform.right * rayCastLength, Color.red);
-        }
-        else if (attackDistance > distance)
-        {
-            Debug.DrawRay(rayCast.position, transform.right * rayCastLength, Color.green);
-        }
+        coolTime -= Time.deltaTime;
+        attack1Cool -= Time.deltaTime;
     }
-
 }
