@@ -26,7 +26,11 @@ public class Reaper : MonoBehaviour, IDamageable, Area
     private Animator anime = null;
     private Color defaultColor;
     [SerializeField] GameObject target; //プレイヤーオブジェクトをアタッチ
-    [SerializeField] GameObject drain;
+    [SerializeField] GameObject drain1;
+    [SerializeField] GameObject drain2;
+    [SerializeField] GameObject drain3;
+    [SerializeField] GameObject drain4;
+    [SerializeField] GameObject drain5;
 
     private bool playerOnTheRight;      //プレイヤーは右にいるか
     private bool inCombat;
@@ -154,8 +158,11 @@ public class Reaper : MonoBehaviour, IDamageable, Area
 
     public void CallDrain()
     {
-        Drain drainscript = drain.GetComponent<Drain>();
-        drainscript.CastCall();
+        drain1.GetComponent<Drain>().CastCall();
+        drain2.GetComponent<Drain>().CastCall();
+        drain3.GetComponent<Drain>().CastCall();
+        drain4.GetComponent<Drain>().CastCall();
+        drain5.GetComponent<Drain>().CastCall();
     }
 
     void Die()  //死亡

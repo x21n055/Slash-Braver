@@ -5,13 +5,18 @@ using UnityEngine;
 public class Drain : MonoBehaviour
 {
     public int speed;
-    public float lifeTime;
+    public float lifeTime = 1;
     public bool attackRight = true;
+    public bool castCalled;
     public bool castEnd = false;
     public bool drainAttack = false;
+    public bool thisIsFirst;
+    public bool thisIsLast;
     public Vector3 offset;
+    public Vector3 targetDirection;
 
     [SerializeField] GameObject target;
+    [SerializeField] GameObject nextDrain;
 
     private SpriteRenderer sr = null;
     private Animator anime = null;
@@ -28,20 +33,18 @@ public class Drain : MonoBehaviour
     {
         if (!drainAttack)
         {
-            transform.position = position.position;
+            transform.position = target.transform.position + offset;
         }
-        if (this.transform.localScale.x == -1)
+        transform.position += targetDirection * speed * Time.deltaTime;
+        if (drainAttack)
         {
-            transform.position += transform.right * speed * Time.deltaTime;
+            lifeTime -= Time.deltaTime;
         }
-        else if (this.transform.localScale.x == 1)
-        {
-            transform.position += -transform.right * speed * Time.deltaTime;
-        }
-        lifeTime -= Time.deltaTime;
         if (lifeTime <= 0)
         {
-            drainAttack = false ;
+            castCalled = false ;
+            drainAttack = false;
+
         }
         DrainActive();
         DrainAttack();
@@ -49,7 +52,35 @@ public class Drain : MonoBehaviour
 
     public void CastCall()
     {
-        castEnd = true;
+        lifeTime = 5;
+        anime.SetTrigger("Drain_Attack");
+        castCalled = true;
+        if (thisIsFirst)
+        {
+            
+            anime.SetTrigger("Drain_Release");
+            StartCoroutine(CallNextDrain());
+            IEnumerator CallNextDrain()
+            {
+                yield return new WaitForSeconds(0.8f);
+                nextDrain.GetComponent<Drain>().ReleaseDrain();
+            }
+        }
+    }
+
+    public void ReleaseDrain()
+    {
+        anime.SetTrigger("Drain_Release");
+        if (!thisIsLast)
+        {
+            StartCoroutine(CallNextDrain());
+            IEnumerator CallNextDrain()
+            {
+                yield return new WaitForSeconds(0.8f);
+                nextDrain.GetComponent<Drain>().ReleaseDrain();
+            }
+        }
+        
     }
 
     public void DrainAttack()
@@ -57,15 +88,6 @@ public class Drain : MonoBehaviour
         if (castEnd)
         {
             transform.position = target.transform.position + offset;
-            if (offset.x <= 0)
-            {
-                transform.localScale = new Vector3(-1, 1, 1);
-            }
-            else if (offset.x >= 0)
-            {
-                transform.localScale = new Vector3(1, 1, 1);
-            }
-            lifeTime = 5;
             drainAttack = true;
             castEnd = false;
         }
@@ -74,11 +96,11 @@ public class Drain : MonoBehaviour
 
     void DrainActive()
     {
-        if (drainAttack)
+        if (castCalled)
         {
             sr.color = new Color(255, 255, 255, 255);
         }
-        else if (!drainAttack)
+        else if (!castCalled)
         {
             sr.color = new Color(255, 255, 255, 0);
         }
@@ -89,6 +111,7 @@ public class Drain : MonoBehaviour
         if (collision.gameObject.tag == "Player")
         {
             drainAttack = false;
+            castCalled = false;
         }
     }
 }
