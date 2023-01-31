@@ -11,17 +11,22 @@ public class Reaper : MonoBehaviour, IDamageable, Area
 
     public float distance;              //プレイヤーとの座標的距離
     public float teleportInterval;
+    public float drainInterval;
 
     public Vector3 offset;
+    public Vector3 upOffset;
     public Vector3 minusoffset;
 
     public bool attacking = false;
+    public bool cantMove = false;
+    public bool teleportAttack;
 
     private Rigidbody2D rb2d = null;
     private SpriteRenderer sr = null;
     private Animator anime = null;
     private Color defaultColor;
     [SerializeField] GameObject target; //プレイヤーオブジェクトをアタッチ
+    [SerializeField] GameObject drain;
 
     private bool playerOnTheRight;      //プレイヤーは右にいるか
     private bool inCombat;
@@ -49,10 +54,17 @@ public class Reaper : MonoBehaviour, IDamageable, Area
     {
         if (inCombat)
         {
-            if (teleportInterval <= 0)
+            if (teleportInterval <= 0 && !attacking)
             {
                 anime.SetTrigger("Teleport_Attack");
                 teleportInterval = 5f;
+                teleportAttack = true;
+            }
+            else if (drainInterval <= 0 && !attacking)
+            {
+                anime.SetTrigger("Drain");
+                drainInterval = 15f;
+                teleportAttack = false;
             }
         }
         
@@ -61,13 +73,20 @@ public class Reaper : MonoBehaviour, IDamageable, Area
 
     void TeleportToPlayer()
     {
-        if (target.transform.localScale.x == 1)
+        if (teleportAttack)
         {
-            this.transform.position = target.transform.position + offset;
+            if (target.transform.localScale.x == 1)
+            {
+                this.transform.position = target.transform.position + offset;
+            }
+            else if (target.transform.localScale.x == -1)
+            {
+                this.transform.position = target.transform.position + minusoffset;
+            }
         }
-        else if (target.transform.localScale.x == -1)
+        else if (!teleportAttack)
         {
-            this.transform.position = target.transform.position + minusoffset;
+            this.transform.position = target.transform.position + upOffset;
         }
     }
     
@@ -88,7 +107,7 @@ public class Reaper : MonoBehaviour, IDamageable, Area
 
     void Flip()    //PlayerWhichSide()から引数を受け取り、それに応じてフリップする
     {
-        if (!isDead && !attacking)
+        if (!isDead && !cantMove)
         {
             if (playerOnTheRight)
             {
@@ -133,6 +152,12 @@ public class Reaper : MonoBehaviour, IDamageable, Area
 
     }
 
+    public void CallDrain()
+    {
+        Drain drainscript = drain.GetComponent<Drain>();
+        drainscript.CastCall();
+    }
+
     void Die()  //死亡
     {
         anime.SetBool("Dead", true);
@@ -140,5 +165,6 @@ public class Reaper : MonoBehaviour, IDamageable, Area
     void TimeOrdhin()
     {
         teleportInterval -= Time.deltaTime;
+        drainInterval -= Time.deltaTime;
     }
 }
