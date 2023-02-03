@@ -17,6 +17,7 @@ public class Enemy : MonoBehaviour, IDamageable, Area
     private bool playerOnTheRight;      //プレイヤーは右にいるか
     public bool attacking = false;
     [SerializeField] GameObject target;
+    public GameObject hitEffectPrefab;
     private Color defaultColor;
 
     //コンポーネント
@@ -114,6 +115,9 @@ public class Enemy : MonoBehaviour, IDamageable, Area
             IEnumerator DamageEffect()
             {
                 anime.SetTrigger("enemy_damaged");
+                Vector3 effectPosition = this.transform.position;
+                Quaternion effectRotation = Quaternion.identity;
+                Instantiate(hitEffectPrefab, effectPosition, effectRotation);
                 for (int i = 0; i < 2; i++)
                 {
                     sr.color = sr.color == defaultColor ? Color.red : defaultColor;

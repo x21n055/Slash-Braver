@@ -107,8 +107,6 @@ public class Player : MonoBehaviour
 
     private void FixedUpdate()
     {
-
-        
         anime.SetBool("Jump", isJumping);
         anime.SetBool("Ground", isGround);
     }
@@ -177,14 +175,14 @@ public class Player : MonoBehaviour
                 {
                     rb2d.velocity = Vector2.right * speed * 3;
                     anime.SetTrigger("Blink");
-                    freezeTime = 0.2f;
+                    freezeTime = 0.1f;
                     blinkCoolTime = 0.6f;
                 }
                 else if (this.gameObject.transform.localScale.x == -1)
                 {
                     rb2d.velocity = Vector2.left * speed * 3;
                     anime.SetTrigger("Blink");
-                    freezeTime = 0.2f;
+                    freezeTime = 0.1f;
                     blinkCoolTime = 0.6f;
                 }
                 

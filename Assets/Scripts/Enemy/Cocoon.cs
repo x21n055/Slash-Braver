@@ -21,6 +21,8 @@ public class Cocoon : MonoBehaviour, IDamageable, Area
     private bool playerOnTheRight;      //プレイヤーは右にいるか
     public bool attacking = false;
     [SerializeField] GameObject target;
+    public GameObject hitEffectPrefab;
+    public GameObject hitParticlePrefab;
     private Color defaultColor;
 
     //コンポーネント
@@ -89,7 +91,7 @@ public class Cocoon : MonoBehaviour, IDamageable, Area
             if (range <= attack2Distance && !attacking && coolTime <= 0 && attack2Cool <= 0)
             {
                 Flip();
-                rb2d.velocity = new Vector2(0, 0);
+                rb2d.velocity = new Vector2(0, rb2d.velocity.y);
                 anime.SetBool("HeavyArmor_Walk", false);
                 anime.SetTrigger("HeavyArmor_Attack3");
                 coolTime = 3;
@@ -126,6 +128,10 @@ public class Cocoon : MonoBehaviour, IDamageable, Area
 
             shock.Invoke();
             currentHealth -= damage;
+            Animator hitEffect = hitEffectPrefab.GetComponent<Animator>();
+            Instantiate(hitEffectPrefab, transform.position, Quaternion.identity);
+            hitParticlePrefab.GetComponent<PlayParticleSystem>().PlayParticles();
+            hitEffect.SetTrigger("Hit");
             StartCoroutine(DamageEffect());
             IEnumerator DamageEffect()
             {
@@ -183,6 +189,11 @@ public class Cocoon : MonoBehaviour, IDamageable, Area
         {
             rb2d.velocity = new Vector2(attackAcceleration, rb2d.velocity.y);
         }
+    }
+
+    public void ResetAccelerate()
+    {
+        rb2d.velocity = new Vector2(0, 0);
     }
     void Die()  //死亡
     {

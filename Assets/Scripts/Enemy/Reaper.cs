@@ -50,9 +50,13 @@ public class Reaper : MonoBehaviour, IDamageable, Area
     // Update is called once per frame
     void Update()
     {
-        PlayerWhichSide();
-        TimeOrdhin();
-        Combat();
+        if (!isDead)
+        {
+            PlayerWhichSide();
+            TimeOrdhin();
+            Combat();
+        }
+        
     }
     void Combat()
     {
@@ -167,7 +171,20 @@ public class Reaper : MonoBehaviour, IDamageable, Area
 
     void Die()  //死亡
     {
-        anime.SetBool("Dead", true);
+        isDead = true;
+        anime.Play("dead");
+        StartCoroutine(WaitForAnimationEnd());
+        IEnumerator WaitForAnimationEnd()
+        {
+            yield return new WaitForEndOfFrame();
+
+            // アニメーション再生終了まで待機
+            while (anime.GetCurrentAnimatorStateInfo(0).normalizedTime < 1)
+            {
+                yield return null;
+            }
+            Destroy(this.gameObject);
+        }
     }
     void TimeOrdhin()
     {
