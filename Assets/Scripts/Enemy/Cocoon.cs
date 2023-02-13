@@ -23,6 +23,7 @@ public class Cocoon : MonoBehaviour, IDamageable, Area
     [SerializeField] GameObject target;
     public GameObject hitEffectPrefab;
     public GameObject hitParticlePrefab;
+    public GameObject hitFragMentsPrefab;
     private Color defaultColor;
 
     //コンポーネント
@@ -67,12 +68,12 @@ public class Cocoon : MonoBehaviour, IDamageable, Area
             anime.SetBool("HeavyArmor_Walk", true);
             if (playerOnTheRight)
             {
-                rb2d.velocity = new Vector2(0,0);
+                rb2d.velocity = new Vector2(0,rb2d.velocity.y);
                 rb2d.velocity = new Vector2(speed, rb2d.velocity.y);
             }
             else if(!playerOnTheRight)
             {
-                rb2d.velocity = new Vector2(0, 0);
+                rb2d.velocity = new Vector2(0, rb2d.velocity.y);
                 rb2d.velocity = new Vector2(-speed, rb2d.velocity.y);
             }
         }
@@ -129,8 +130,8 @@ public class Cocoon : MonoBehaviour, IDamageable, Area
             shock.Invoke();
             currentHealth -= damage;
             Animator hitEffect = hitEffectPrefab.GetComponent<Animator>();
-            Instantiate(hitEffectPrefab, transform.position, Quaternion.identity);
             hitParticlePrefab.GetComponent<PlayParticleSystem>().PlayParticles();
+            hitFragMentsPrefab.GetComponent<PlayParticleSystem>().PlayParticles();
             hitEffect.SetTrigger("Hit");
             StartCoroutine(DamageEffect());
             IEnumerator DamageEffect()

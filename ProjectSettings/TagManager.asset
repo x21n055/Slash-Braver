@@ -70,6 +70,9 @@ TagManager:
   - name: Ground
     uniqueID: 2691049979
     locked: 0
+  - name: Effect
+    uniqueID: 961066107
+    locked: 0
   - name: Mob
     uniqueID: 849918291
     locked: 0

@@ -47,6 +47,7 @@ public class Player : MonoBehaviour
     private SpriteRenderer sr = null;
     private bool isGround;
     private bool isJumping;
+    private bool is2ndJumping = false;
     private bool blink = false;
 
     private float jumpTimeCounter;
@@ -129,6 +130,10 @@ public class Player : MonoBehaviour
         {
             horizontalkey = 0;
         }
+        if (isGround)
+        {
+            is2ndJumping = false;
+        }
     }
     //‰¡ˆÚ“®
     void Flip()
@@ -167,23 +172,26 @@ public class Player : MonoBehaviour
             if (blinkTimer <= 0)
             {
                 blink = false;
+                invincible = false;
                 rb2d.velocity = Vector2.zero;
             }
             else
             {
                 if (this.gameObject.transform.localScale.x == 1)
                 {
+                    invincible = true;
                     rb2d.velocity = Vector2.right * speed * 3;
                     anime.SetTrigger("Blink");
                     freezeTime = 0.1f;
-                    blinkCoolTime = 0.6f;
+                    blinkCoolTime = 0.4f;
                 }
                 else if (this.gameObject.transform.localScale.x == -1)
                 {
+                    invincible = true;
                     rb2d.velocity = Vector2.left * speed * 3;
                     anime.SetTrigger("Blink");
                     freezeTime = 0.1f;
-                    blinkCoolTime = 0.6f;
+                    blinkCoolTime = 0.4f;
                 }
                 
             }
@@ -214,9 +222,10 @@ public class Player : MonoBehaviour
                 }
             }
 
-            if (!isJumping && !isGround && Input.GetKeyDown(KeyCode.Space))
+            if (!isJumping && !isGround && Input.GetKeyDown(KeyCode.Space) && !is2ndJumping)
             {
-
+                rb2d.velocity = new Vector2(rb2d.velocity.x, 0);
+                is2ndJumping = true;
                 rb2d.AddForce(Vector2.up * jumpImpulse, ForceMode2D.Impulse);
             }
 

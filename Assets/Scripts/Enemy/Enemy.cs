@@ -11,6 +11,7 @@ public class Enemy : MonoBehaviour, IDamageable, Area
     public int thisArea;
     public float attack1Distance;       //通常近接攻撃
     public float attack1Cool;           //近接攻撃クールタイム
+    public float knockBackForce;
     [SerializeField] private float coolTime;              //行動クールタイム
     public float distance;              //プレイヤーとの座標的距離
     public float range;                 //プレイヤーとの距離
@@ -18,6 +19,8 @@ public class Enemy : MonoBehaviour, IDamageable, Area
     public bool attacking = false;
     [SerializeField] GameObject target;
     public GameObject hitEffectPrefab;
+    public GameObject hitParticlePrefab;
+    public GameObject knockBackPosition;
     private Color defaultColor;
 
     //コンポーネント
@@ -49,6 +52,8 @@ public class Enemy : MonoBehaviour, IDamageable, Area
             Move();
             Combat();
             TimeManage();
+            //Debug.Log(cantMove);
+            //Debug.Log(rb2d.velocity.x);
         }
 
     }
@@ -108,16 +113,30 @@ public class Enemy : MonoBehaviour, IDamageable, Area
     {
         if (!isDead)
         {
-
+            cantMove = true;
             shock.Invoke();
             currentHealth -= damage;
+            this.transform.position = new Vector3(knockBackPosition.transform.position.x, transform.position.y, transform.position.z);
+            Animator hitEffect = hitEffectPrefab.GetComponent<Animator>();
+            hitParticlePrefab.GetComponent<PlayParticleSystem>().PlayParticles();
+            //hitFragMentsPrefab.GetComponent<PlayParticleSystem>().PlayParticles();
+            hitEffect.SetTrigger("Hit");
+            /*if (target.transform.localScale.x == 1)
+            {
+                rb2d.velocity = new Vector2(0, 0);
+                rb2d.AddForce(Vector2.right * knockBackForce, ForceMode2D.Impulse);
+                Debug.Log("右");
+            }
+            else if (target.transform.localScale.x == -1)
+            {
+                rb2d.velocity = new Vector2(0, 0);
+                rb2d.AddForce(Vector2.left * knockBackForce, ForceMode2D.Impulse);
+                Debug.Log("左");
+            }*/
             StartCoroutine(DamageEffect());
             IEnumerator DamageEffect()
             {
                 anime.SetTrigger("enemy_damaged");
-                Vector3 effectPosition = this.transform.position;
-                Quaternion effectRotation = Quaternion.identity;
-                Instantiate(hitEffectPrefab, effectPosition, effectRotation);
                 for (int i = 0; i < 2; i++)
                 {
                     sr.color = sr.color == defaultColor ? Color.red : defaultColor;

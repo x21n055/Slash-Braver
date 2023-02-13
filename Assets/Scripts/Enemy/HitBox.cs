@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class HitBox : MonoBehaviour
 {
+    public int damage;
     private void OnTriggerEnter2D(Collider2D player)
     {
         if (player.gameObject.tag == "Player")
@@ -11,7 +12,7 @@ public class HitBox : MonoBehaviour
             Player playerScript = player.GetComponent<Player>();
             if (playerScript != null)
             {
-                playerScript.TakeDamage(this.gameObject, 40);
+                playerScript.TakeDamage(this.gameObject, damage);
             }
             
         }
