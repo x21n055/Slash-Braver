@@ -17,6 +17,7 @@ public class Drain : MonoBehaviour
 
     [SerializeField] GameObject target;
     [SerializeField] GameObject nextDrain;
+    [SerializeField] GameObject DrainPosition;
 
     private SpriteRenderer sr = null;
     private Animator anime = null;
@@ -33,7 +34,7 @@ public class Drain : MonoBehaviour
     {
         if (!drainAttack)
         {
-            transform.position = target.transform.position + offset;
+            transform.position = new Vector3(target.transform.position.x, DrainPosition.transform.position.y, 0) + offset;
         }
         transform.position += targetDirection * speed * Time.deltaTime;
         if (drainAttack)
@@ -87,7 +88,7 @@ public class Drain : MonoBehaviour
     {
         if (castEnd)
         {
-            transform.position = new Vector3(target.transform.position.x, target.transform.position.y, 0)+ offset;
+            transform.position = new Vector3(target.transform.position.x, DrainPosition.transform.position.y, 0)+ offset;
             drainAttack = true;
             castEnd = false;
         }

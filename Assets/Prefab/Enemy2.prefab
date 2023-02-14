@@ -303,7 +303,7 @@ MonoBehaviour:
   thisArea: 2
   attack1Distance: 3
   attack1Cool: 2
-  knockBackForce: 0
+  knockBackForce: 2.5
   coolTime: 3
   distance: 0
   range: 0

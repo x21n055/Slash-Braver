@@ -116,23 +116,21 @@ public class Enemy : MonoBehaviour, IDamageable, Area
             cantMove = true;
             shock.Invoke();
             currentHealth -= damage;
-            this.transform.position = new Vector3(knockBackPosition.transform.position.x, transform.position.y, transform.position.z);
+            //this.transform.position = new Vector3(knockBackPosition.transform.position.x, transform.position.y, transform.position.z);
             Animator hitEffect = hitEffectPrefab.GetComponent<Animator>();
             hitParticlePrefab.GetComponent<PlayParticleSystem>().PlayParticles();
             //hitFragMentsPrefab.GetComponent<PlayParticleSystem>().PlayParticles();
             hitEffect.SetTrigger("Hit");
-            /*if (target.transform.localScale.x == 1)
+            if (target.transform.localScale.x == 1)
             {
-                rb2d.velocity = new Vector2(0, 0);
-                rb2d.AddForce(Vector2.right * knockBackForce, ForceMode2D.Impulse);
+                this.transform.position = new Vector3(transform.position.x + knockBackForce, transform.position.y, transform.position.z);
                 Debug.Log("âE");
             }
             else if (target.transform.localScale.x == -1)
             {
-                rb2d.velocity = new Vector2(0, 0);
-                rb2d.AddForce(Vector2.left * knockBackForce, ForceMode2D.Impulse);
+                this.transform.position = new Vector3(transform.position.x - knockBackForce, transform.position.y, transform.position.z);
                 Debug.Log("ç∂");
-            }*/
+            }
             StartCoroutine(DamageEffect());
             IEnumerator DamageEffect()
             {
